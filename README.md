@@ -62,7 +62,14 @@ pip install -r requirements.txt
 python app.py
 ```
 
-🌐 Live Demo
+
+## 🎥 Demo
+
+<img src="images/demo.gif" width="600">
+
+
+## Author
+>>>>>>> 584ab3d (add demo gif)
 
 🔗 https://lost-found-portal-1-ivnk.onrender.com
 
