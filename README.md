@@ -69,7 +69,7 @@ python app.py
 
 
 
->>>>>>> 584ab3d (add demo gif)
+
 
 ## 🎥 Demo
 🔗 https://lost-found-portal-1-ivnk.onrender.com
