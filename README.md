@@ -1,43 +1,53 @@
 # Lost and Found Portal
 
-A web-based Lost and Found Portal developed using Flask and SQLite.
+A web-based Lost and Found Portal developed using Flask and SQLite.  
+It allows users to report, search, and manage lost & found items efficiently.
 
-## Features
+---
 
-- User Registration and Login
-- Report Lost Items
-- Report Found Items
-- Search Items
-- Manage Item Records
-- Responsive User Interface
+## 🚀 Features
 
-## Technologies Used
+- User Registration and Login  
+- Report Lost Items  
+- Report Found Items  
+- Search Items  
+- View Item Details  
+- Mark Items as Collected  
+- Responsive User Interface  
 
-- Python
-- Flask
-- SQLite
-- HTML
-- CSS
-- JavaScript
+---
 
-## Output Screenshots
+## 🛠️ Technologies Used
+
+- Python  
+- Flask  
+- SQLite  
+- HTML  
+- CSS  
+- JavaScript  
+
+---
+
+## 📸 Output Screenshots
 
 ### Home Page
 <img src="images/HOME_PAGE.png" width="500">
 
-### Upload Page
+### Register Page
 <img src="images/REGISTER_PAGE.png" width="500">
 
-### search Page
+### Search Page
 <img src="images/SEARCH_PAGE.png" width="500">
 
-### item view Page
+### Item View Page
 <img src="images/ITEM_VIEW_PAGE.png" width="500">
 
-### item collected Page
+### Item Collected Page
 <img src="images/ITEM_COLLECTED_PAGE.png" width="500">
 
-## Installation
+---
+
+## ⚙️ Installation
 
 ```bash
 git clone <repository-url>
@@ -49,7 +59,6 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 python app.py
-```
 
 ## Live Demo
 
