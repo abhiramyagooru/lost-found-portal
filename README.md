@@ -23,13 +23,19 @@ A web-based Lost and Found Portal developed using Flask and SQLite.
 ## Output Screenshots
 
 ### Home Page
-![Home](images/home.png)
+<img src="images/HOME_PAGE.png" width="500">
 
 ### Upload Page
-![Upload](images/upload.png)
+<img src="images/REGISTER_PAGE.png" width="500">
 
-### Result Page
-![Result](images/result.png)
+### search Page
+<img src="images/SEARCH_PAGE.png" width="500">
+
+### item view Page
+<img src="images/ITEM_VIEW_PAGE.png" width="500">
+
+### item collected Page
+<img src="images/ITEM_COLLECTED_PAGE.png" width="500">
 
 ## Installation
 
