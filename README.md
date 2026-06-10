@@ -28,6 +28,8 @@ It allows users to report, search, and manage lost & found items efficiently.
 
 ---
 
+
+
 ## 📸 Output Screenshots
 
 ### Home Page
@@ -46,7 +48,6 @@ It allows users to report, search, and manage lost & found items efficiently.
 <img src="images/ITEM_COLLECTED_PAGE.png" width="500">
 
 ---
-
 ## ⚙️ Installation
 
 ```bash
@@ -59,8 +60,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 python app.py
-
-
+```
 
 🌐 Live Demo
 
