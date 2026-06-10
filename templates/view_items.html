@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}All Items - Lost & Found Portal{% endblock %}
+
+{% block head %}
+<style>
+    .filter-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .items-count {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .empty-state-icon {
+        font-size: 5rem;
+        opacity: 0.2;
+    }
+    
+    .sort-dropdown .dropdown-menu {
+        min-width: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">All Registered Items</h2>
+            <p class="text-muted items-count">
+                <i class="bi bi-grid me-1"></i>
+                Showing {{ items|length }} item(s) in the system
+            </p>
+        </div>
+        
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Add New
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-house me-1"></i>Home
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="filter-container mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="filterItems" 
+                           placeholder="Filter items by name or place...">
+                </div>
+            </div>
+            <div class="col-md-6 mt-3 mt-md-0">
+                <div class="d-flex justify-content-md-end">
+                    <div class="dropdown sort-dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                data-bs-toggle="dropdown">
+                            <i class="bi bi-sort-down me-1"></i>Sort by
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="sortItems('name')">Name (A-Z)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortItems('name-desc')">Name (Z-A)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortItems('recent')">Most Recent</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortItems('oldest')">Oldest</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Items Grid -->
+    {% if items %}
+    <div class="row g-4" id="itemsContainer">
+        {% for id, name, place, contact, collect_place, image in items %}
+        <div class="col-xl-3 col-lg-4 col-md-6 item-card-container" 
+             data-name="{{ name.lower() }}" 
+             data-place="{{ place.lower() }}">
+            <div class="card item-card h-100 border-0 shadow-sm">
+                <!-- Image -->
+                <div class="position-relative overflow-hidden" style="height: 180px;">
+                    {% if image %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ image) }}" 
+                         class="item-card-img w-100 h-100" 
+                         alt="{{ name }}"
+                         loading="lazy">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100">
+                        <i class="bi bi-image text-muted fs-1"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Quick Actions -->
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('item_details', item_id=id) }}" 
+                               class="btn btn-light" 
+                               data-bs-toggle="tooltip" 
+                               title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Body -->
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold mb-2">{{ name }}</h5>
+                    <p class="card-text text-muted mb-2">
+                        <i class="bi bi-geo-alt me-1"></i>{{ place }}
+                    </p>
+                    
+                    {% if collect_place %}
+                    <p class="card-text text-muted mb-3">
+                        <i class="bi bi-building me-1"></i>{{ collect_place }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-hash me-1"></i>ID: {{ id }}
+                            </small>
+                            <a href="{{ url_for('item_details', item_id=id) }}" 
+                               class="btn btn-sm btn-outline-primary">
+                                View <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Empty State (when filtered) -->
+    <div id="noResults" class="d-none">
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-search empty-state-icon"></i>
+            </div>
+            <h4 class="fw-bold mb-3">No items found</h4>
+            <p class="text-muted mb-4">Try adjusting your filter or view all items.</p>
+            <button class="btn btn-outline-primary" onclick="clearFilter()">
+                <i class="bi bi-x-circle me-1"></i>Clear Filter
+            </button>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Empty State (no items at all) -->
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-inbox empty-state-icon"></i>
+        </div>
+        <h4 class="fw-bold mb-3">No items registered yet</h4>
+        <p class="text-muted mb-4">Be the first to register a lost or found item.</p>
+        <a href="{{ url_for('add_item') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle me-1"></i>Register First Item
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Stats Footer -->
+    {% if items %}
+    <div class="mt-5 pt-4 border-top">
+        <div class="row">
+            <div class="col-md-4 text-center mb-3">
+                <div class="fw-bold fs-3 text-primary">{{ items|length }}</div>
+                <div class="text-muted">Total Items</div>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+                <div class="fw-bold fs-3 text-success">
+                    {{ items|selectattr("5")|list|length }}
+                </div>
+                <div class="text-muted">With Photos</div>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+                <div class="fw-bold fs-3 text-info">
+                    {{ items|selectattr("4")|list|length }}
+                </div>
+                <div class="text-muted">With Collection Place</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Filter items by name or place
+    document.getElementById('filterItems').addEventListener('input', function() {
+        const filter = this.value.toLowerCase();
+        const items = document.querySelectorAll('.item-card-container');
+        let visibleCount = 0;
+        
+        items.forEach(item => {
+            const name = item.dataset.name;
+            const place = item.dataset.place;
+            
+            if (name.includes(filter) || place.includes(filter)) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Show/hide no results message
+        const noResults = document.getElementById('noResults');
+        if (visibleCount === 0 && items.length > 0) {
+            noResults.classList.remove('d-none');
+            document.getElementById('itemsContainer').classList.add('d-none');
+        } else {
+            noResults.classList.add('d-none');
+            document.getElementById('itemsContainer').classList.remove('d-none');
+        }
+    });
+    
+    // Sort items
+    function sortItems(method) {
+        const container = document.getElementById('itemsContainer');
+        const items = Array.from(container.querySelectorAll('.item-card-container'));
+        
+        items.sort((a, b) => {
+            const nameA = a.querySelector('.card-title').textContent.toLowerCase();
+            const nameB = b.querySelector('.card-title').textContent.toLowerCase();
+            
+            switch(method) {
+                case 'name':
+                    return nameA.localeCompare(nameB);
+                case 'name-desc':
+                    return nameB.localeCompare(nameA);
+                case 'recent':
+                    return -1; // Assuming newer items are first in the array
+                case 'oldest':
+                    return 1;
+                default:
+                    return 0;
+            }
+        });
+        
+        // Reorder DOM
+        items.forEach(item => container.appendChild(item));
+        
+        // Update sort button text
+        const sortText = {
+            'name': 'Name (A-Z)',
+            'name-desc': 'Name (Z-A)',
+            'recent': 'Most Recent',
+            'oldest': 'Oldest'
+        }[method];
+        
+        document.querySelector('.sort-dropdown .dropdown-toggle').innerHTML = 
+            `<i class="bi bi-sort-down me-1"></i>${sortText}`;
+    }
+    
+    function clearFilter() {
+        document.getElementById('filterItems').value = '';
+        document.getElementById('filterItems').dispatchEvent(new Event('input'));
+    }
+    
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltips.map(tooltip => new bootstrap.Tooltip(tooltip));
+    });
+</script>
+{% endblock %}

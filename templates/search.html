@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Search Items - Lost & Found Portal{% endblock %}
+
+{% block head %}
+<style>
+    .search-highlight {
+        background-color: #fff3cd;
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+    
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+    
+    .filter-badge {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-badge:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="d-flex align-items-center mb-4">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm me-3">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="fw-bold mb-0">Search Lost & Found Items</h2>
+            </div>
+            
+            <!-- Search Box -->
+            <div class="neumorphic-card p-3 mb-4">
+                <form id="searchForm" method="POST" class="search-container">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control form-control-lg border-0 shadow-none" 
+                               id="searchInput" name="keyword" 
+                               placeholder="Search by item name, place, or keywords..." 
+                               value="{{ request.form.keyword if request.form.keyword }}" 
+                               autocomplete="off" autofocus>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search me-1"></i>Search
+                        </button>
+                    </div>
+                    <div id="suggestions" class="autocomplete-suggestions d-none"></div>
+                </form>
+                
+                <!-- Quick Filters -->
+                <div class="mt-3">
+                    <small class="text-muted me-2">Quick search:</small>
+                    {% for filter in ['Keys', 'Wallet', 'Phone', 'Bag', 'Water Bottle', 'Books'] %}
+                    <span class="badge bg-light text-dark border filter-badge me-1 mb-1" 
+                          onclick="setSearch('{{ filter }}')">
+                        {{ filter }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Results Count -->
+            {% if request.method == 'POST' %}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">
+                    {% if items %}
+                        <span class="text-primary">{{ items|length }}</span> item(s) found
+                    {% else %}
+                        No items found
+                    {% endif %}
+                </h5>
+                {% if items %}
+                <button class="btn btn-sm btn-outline-secondary" onclick="clearSearch()">
+                    <i class="bi bi-x-circle me-1"></i>Clear Search
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Results Grid -->
+    {% if items %}
+    <div class="row g-4">
+        {% for id, name, place, contact, collect_place, image in items %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card item-card h-100 border-0 shadow-sm">
+                {% if image %}
+                <div class="position-relative overflow-hidden" style="height: 200px;">
+                    <img src="{{ url_for('static', filename='uploads/' ~ image) }}" 
+                         class="item-card-img w-100 h-100" 
+                         alt="{{ name }}"
+                         loading="lazy">
+                    <span class="item-badge">
+                        <i class="bi bi-image me-1"></i>Has Photo
+                    </span>
+                </div>
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-image text-muted fs-1"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-2">{{ name }}</h5>
+                    <p class="card-text text-muted mb-2">
+                        <i class="bi bi-geo-alt me-1"></i>{{ place }}
+                    </p>
+                    <p class="card-text text-muted mb-3">
+                        <i class="bi bi-building me-1"></i>
+                        {% if collect_place %}
+                            {{ collect_place }}
+                        {% else %}
+                            <span class="text-muted">Collection place not specified</span>
+                        {% endif %}
+                    </p>
+                    
+                    <div class="d-grid">
+                        <a href="{{ url_for('item_details', item_id=id) }}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye me-1"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% elif request.method == 'POST' %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="mb-4">
+            <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="fw-bold mb-3">No items found</h4>
+        <p class="text-muted mb-4">Try searching with different keywords or check all items.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('view_items') }}" class="btn btn-outline-primary">
+                <i class="bi bi-grid me-1"></i>View All Items
+            </a>
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Register New Item
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function setSearch(keyword) {
+        document.getElementById('searchInput').value = keyword;
+        document.getElementById('searchForm').submit();
+    }
+    
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchForm').submit();
+    }
+    
+    // Highlight search term in results
+    function highlightText() {
+        const searchTerm = "{{ request.form.keyword if request.form.keyword }}".toLowerCase();
+        if (!searchTerm) return;
+        
+        document.querySelectorAll('.card-title').forEach(title => {
+            const text = title.textContent;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            title.innerHTML = text.replace(regex, '<span class="search-highlight">$1</span>');
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', highlightText);
+</script>
+{% endblock %}

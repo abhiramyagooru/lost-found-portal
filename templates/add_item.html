@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Register Item - Lost & Found Portal{% endblock %}
+
+{% block head %}
+<style>
+    .upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .upload-area:hover {
+        border-color: #4361ee;
+        background: #f0f4ff;
+    }
+    
+    .upload-area.dragover {
+        border-color: #4361ee;
+        background: #e8edff;
+    }
+    
+    .collection-option {
+        transition: all 0.3s ease;
+    }
+    
+    .collection-option:hover {
+        transform: translateX(5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm me-3">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="fw-bold mb-0">Register Lost/Found Item</h2>
+            </div>
+            
+            <div class="neumorphic-card p-4">
+                <p class="text-muted mb-4">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Fill in the details below to register a lost or found item. All fields are required.
+                </p>
+                
+                <form method="POST" enctype="multipart/form-data" id="itemForm" novalidate>
+                    <!-- Item Name -->
+                    <div class="mb-4">
+                        <label for="name" class="form-label fw-semibold">
+                            <i class="bi bi-tag me-1"></i>Item Name *
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="name" name="name" 
+                               placeholder="e.g., Water Bottle, Wallet, Keys" required>
+                        <div class="form-text">Enter only letters and spaces (no numbers or special characters)</div>
+                    </div>
+                    
+                    <!-- Place Found -->
+                    <div class="mb-4">
+                        <label for="place" class="form-label fw-semibold">
+                            <i class="bi bi-geo-alt me-1"></i>Place Found *
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="place" name="place" 
+                               placeholder="e.g., Library, Cafeteria, Parking Lot" required>
+                    </div>
+                    
+                    <!-- Contact Number -->
+                    <div class="mb-4">
+                        <label for="contact" class="form-label fw-semibold">
+                            <i class="bi bi-telephone me-1"></i>Contact Number *
+                        </label>
+                        <input type="tel" class="form-control form-control-lg" id="contact" name="contact" 
+                               placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                        <div class="form-text">Enter your 10-digit mobile number</div>
+                    </div>
+                    
+                    <!-- Collection Place -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-building me-1"></i>Collection Place
+                        </label>
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control" id="collect_place" name="collect_place" 
+                                   placeholder="Select or enter collection place">
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#collectModal">
+                                <i class="bi bi-list"></i> Select
+                            </button>
+                        </div>
+                        <div class="form-text">Where can the owner collect this item?</div>
+                    </div>
+                    
+                    <!-- Image Upload -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-image me-1"></i>Item Image *
+                        </label>
+                        
+                        <!-- Upload Area -->
+                        <div class="upload-area mb-3" id="uploadArea">
+                            <i class="bi bi-cloud-arrow-up fs-1 text-muted mb-3"></i>
+                            <h5 class="mb-2">Drag & drop or click to upload</h5>
+                            <p class="text-muted mb-3">Upload a clear photo of the item (JPG, PNG, WEBP)</p>
+                            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('imageInput').click()">
+                                <i class="bi bi-upload me-1"></i>Choose File
+                            </button>
+                            <input type="file" class="d-none" id="imageInput" name="image" accept="image/*" required>
+                        </div>
+                        
+                        <!-- Preview -->
+                        <div class="text-center">
+                            <img id="imagePreview" src="#" alt="Preview" class="image-preview d-none">
+                        </div>
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4" onclick="return validateForm()">
+                            <i class="bi bi-check-circle me-1"></i>Register Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Collection Place Modal -->
+<div class="modal fade" id="collectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-building me-1"></i>Select Collection Place
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-grid gap-2">
+                    {% for place in ['Reception', 'Admin Office', 'Library', 'Cafeteria', 'Security Desk', 'Main Gate', 'Store Room'] %}
+                    <button type="button" class="btn btn-outline-primary text-start collection-option">
+                        <i class="bi bi-geo me-1"></i>{{ place }}
+                    </button>
+                    {% endfor %}
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <label class="form-label">Or enter custom place:</label>
+                    <input type="text" class="form-control" id="customPlace" placeholder="Enter custom location">
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2 w-100" onclick="useCustomPlace()">
+                        Use Custom Place
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Drag and drop functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    
+    uploadArea.addEventListener('click', () => imageInput.click());
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.classList.add('dragover');
+        }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.classList.remove('dragover');
+        }, false);
+    });
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            imageInput.files = files;
+            previewImage(files[0]);
+        }
+    }
+    
+    imageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            previewImage(this.files[0]);
+        }
+    });
+    
+    function previewImage(file) {
+        const reader = new FileReader();
+        const preview = document.getElementById('imagePreview');
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.remove('d-none');
+            uploadArea.style.display = 'none';
+        };
+        
+        reader.readAsDataURL(file);
+    }
+    
+    // Collection place selection
+    document.querySelectorAll('.collection-option').forEach(button => {
+        button.addEventListener('click', function() {
+            document.getElementById('collect_place').value = this.textContent.trim();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('collectModal'));
+            modal.hide();
+        });
+    });
+    
+    function useCustomPlace() {
+        const customPlace = document.getElementById('customPlace').value.trim();
+        if (customPlace) {
+            document.getElementById('collect_place').value = customPlace;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('collectModal'));
+            modal.hide();
+        }
+    }
+    
+    // Form validation
+    function validateForm() {
+        const name = document.getElementById('name').value.trim();
+        const contact = document.getElementById('contact').value.trim();
+        const image = document.getElementById('imageInput').files[0];
+        
+        // Name validation (letters and spaces only)
+        const nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(name)) {
+            Swal.fire('Invalid Name', 'Item name must contain only letters and spaces.', 'error');
+            return false;
+        }
+        
+        // Contact validation (10 digits)
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(contact)) {
+            Swal.fire('Invalid Contact', 'Contact number must be exactly 10 digits.', 'error');
+            return false;
+        }
+        
+        // Image validation
+        if (!image) {
+            Swal.fire('Image Required', 'Please upload an image of the item.', 'error');
+            return false;
+        }
+        
+        // Show loading
+        showLoading();
+        return true;
+    }
+</script>
+{% endblock %}
