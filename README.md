@@ -63,18 +63,20 @@ python app.py
 ```
 
 
-## 🎥 Demo
-
-<img src="images/demo.gif" width="600">
 
 
-## Author
+<img src="images/demo.gif.gif" width="600">
+
+
+
 >>>>>>> 584ab3d (add demo gif)
 
+## 🎥 Demo
 🔗 https://lost-found-portal-1-ivnk.onrender.com
 
 ⚠ Note: It may take 20–30 seconds to load initially due to free hosting.
 
+## Author
 👨‍💻 Author
 
 Abhiram Yagooru
