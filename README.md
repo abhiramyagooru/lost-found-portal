@@ -20,6 +20,17 @@ A web-based Lost and Found Portal developed using Flask and SQLite.
 - CSS
 - JavaScript
 
+## Output Screenshots
+
+### Home Page
+![Home](images/home.png)
+
+### Upload Page
+![Upload](images/upload.png)
+
+### Result Page
+![Result](images/result.png)
+
 ## Installation
 
 ```bash
