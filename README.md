@@ -60,12 +60,14 @@ pip install -r requirements.txt
 
 python app.py
 
-## Live Demo
 
-🔗 [Visit Project](https://lost-found-portal-1-ivnk.onrender.com)
+
+🌐 Live Demo
+
+🔗 https://lost-found-portal-1-ivnk.onrender.com
 
 ⚠ Note: It may take 20–30 seconds to load initially due to free hosting.
 
-## Author
+👨‍💻 Author
 
 Abhiram Yagooru
